@@ -1,0 +1,39 @@
+
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="cube">
+    <link name="cube_link">
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.08</mass>
+      </inertial>
+
+      <visual name="cube_visual">
+        <pose>0 0 0 0 0 0</pose>
+        <material>
+          <script>
+            <uri>model://cube/materials/scripts</uri>
+            <uri>model://cube/materials/textures</uri>
+            <name>cube</name>
+          </script>
+        </material>
+        <geometry>
+          <mesh>
+            <uri>model://cube/meshes/cube.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+
+      <collision name="cube_collision">
+        <pose>0.02 0.002 0.05 0 0 -1.05</pose>
+        <geometry>
+          <box>
+            <size>1 1 1</size> 
+          </box>
+        </geometry>
+      </collision>
+
+    </link>
+  </model>
+</sdf>

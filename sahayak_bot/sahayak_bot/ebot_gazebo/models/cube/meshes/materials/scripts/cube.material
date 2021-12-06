@@ -1,0 +1,13 @@
+material cube/color
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture image10.jpeg
+      }
+    }
+  }
+}

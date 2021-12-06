@@ -1,0 +1,6 @@
+<launch>
+
+	<node pkg="autodoc" name="rosdetect_autodoc" type="rosdetect.py" output ="screen"> </node> 
+       
+
+</launch>

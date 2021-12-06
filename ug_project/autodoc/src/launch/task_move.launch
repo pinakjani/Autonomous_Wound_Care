@@ -1,0 +1,73 @@
+<launch>
+<!--   ebot -->
+	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find autodoc)/src/urdf/ebot_ur5.xacro'"/>
+   
+
+
+<!--   ur5 world -->
+	<include file="$(find autodoc)/src/launch/lab.launch" />
+
+	<arg name="x" default="0.000"/>
+	<arg name="y" default="0.000"/>
+	<arg name="z" default="0.000"/>
+	<arg name="r" default="0.000"/>
+	<arg name="p" default="-0.000"/>
+	<arg name="ya" default="0.000"/>		
+
+<!-- Spawn the ur5 robot model 
+-->
+	<node name="mybot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" 
+	args="-urdf -param robot_description -model ebot -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg r) -P $(arg p) -Y $(arg ya)"/>
+
+<!-- include moveit launch file and node for pick and place using perception feedback -->
+	
+<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <param name="tf_prefix" type="string" value="" />
+</node>
+    
+<rosparam file="$(find pkg_moveit_ur5_robot)/config/joint_state_controller.yaml" command="load"/>
+    
+<node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn joint_state_controller" respawn="false" output="screen"/>
+    
+<rosparam file="$(find pkg_moveit_ur5_robot)/config/trajectory_control.yaml" command="load"/>
+
+<node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" 
+args="spawn arm_controller gripper_controller" respawn="false" output="screen"/>
+
+<include file="$(find pkg_moveit_ur5_robot)/launch/planning_context.launch" >
+    <arg name="load_robot_description" value="true" />
+</include>
+  
+<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="/use_gui" value="false"/>
+    <rosparam param="/source_list">[/joint_states]</rosparam>
+</node>
+  
+<include file="$(find pkg_moveit_ur5_robot)/launch/move_group.launch">
+    <arg name="publish_monitored_planning_scene" value="true" />
+ </include>
+<!-- 
+<include file="$(find pkg_moveit_ur5_robot)/launch/moveit_rviz.launch">
+  <arg name="rviz_config" value="$(find pkg_moveit_ur5_robot)/launch/moveit.rviz"/>
+  <arg name="debug" value="false"/>
+</include>
+
+Add tables and drop boxes to Moveit Planning Scene in RViz
+	<arg name="scene_file" default="$(find autodoc)/src/scenes/lab.scene"/> 
+	<node name = "moveit_publish_scene_from_text" pkg= "moveit_ros_planning" type = "moveit_publish_scene_from_text" args= "$(arg scene_file)"/> --> 
+
+<node pkg="autodoc" name="pick_place_autodoc" type="pick_place_autodoc.py" output ="screen"> </node> 
+
+<!--
+<include file="$(find autodoc)/src/launch/detect.launch" >
+</include>
+
+<node pkg="autodoc" name="rosdetect_autodoc" type="rosdetect.py" output ="screen"> </node> 
+
+	
+include the moveit launch file and node for pick and place 
+	-->	
+
+
+</launch>
